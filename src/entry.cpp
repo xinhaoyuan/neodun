@@ -2,6 +2,7 @@
 #include <SDL.h>
 
 #include "canvas.hpp"
+#include "game.hpp"
 
 using namespace std;
 using namespace ND;
@@ -25,16 +26,13 @@ main(int argc, char **argv) {
     Canvas::sdl_window = win;
 
     Canvas *canvas = new Canvas(NULL);
-    // clear the window with black
-    canvas->set_color(0, 0, 0, 255);
-    canvas->clear();
-    // draw a white rectangle
-    canvas->set_color(255, 255, 255, 255);
-    canvas->fill_rect(10, 10, 100, 100);
-    canvas->flush();
-    
-    SDL_Delay(2000);
+    System *system = new System();
+    Game *game = new Game(canvas, system);
 
+    game->main();
+
+    delete game;
+    delete system;
     delete canvas;
     
     SDL_DestroyWindow(win);
