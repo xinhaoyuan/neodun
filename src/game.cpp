@@ -77,6 +77,7 @@ Game::main(void) {
         }
 
         _canvas->begin();
+        _canvas->set_color(0, 0, 0, 255);
         _canvas->clear();
         
         for (OrderedSpriteSet::iterator it = _sprites->begin();
