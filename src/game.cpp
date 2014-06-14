@@ -79,7 +79,8 @@ Game::main(void) {
         _canvas->begin();
         _canvas->set_color(0, 0, 0, 255);
         _canvas->clear();
-        
+
+        // draw all sprites from far to near
         for (OrderedSpriteSet::iterator it = _sprites->begin();
              it != _sprites->end(); ++ it) {
             (*it)->draw(_canvas, &_viewport);
