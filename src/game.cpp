@@ -1,5 +1,6 @@
 #include <iostream>
 #include <stdint.h>
+#include <assert.h>
 
 #include <SDL_image.h>
 
@@ -11,7 +12,7 @@ using namespace ND;
 #define GAME_FPS 30
 
 bool
-SpriteDrawOrder::operator()(Sprite *a, Sprite *b) {
+Game::SpriteDrawOrder::operator()(Sprite *a, Sprite *b) {
     if (a->center_y < b->center_y) return true;
     else return ((uintptr_t)a < (uintptr_t)b);
 }
@@ -20,21 +21,19 @@ Game::Game(Canvas *canvas, System *system) {
     _canvas = canvas;
     _system = system;
     _running = true;
-    _sprites = new OrderedSpriteSet();
 }
 
 Game::~Game(void) {
-    delete _sprites;
 }
 
 void
 Game::sprite_insert(Sprite *sprite) {
-    _sprites->insert(sprite);
+    _sprites.insert(sprite);
 }
 
 void
 Game::sprite_remove(Sprite *sprite) {
-    _sprites->erase(sprite);
+    _sprites.erase(sprite);
 }
 
 void
@@ -81,11 +80,22 @@ Game::main(void) {
         _canvas->clear();
 
         // draw all sprites from far to near
-        for (OrderedSpriteSet::iterator it = _sprites->begin();
-             it != _sprites->end(); ++ it) {
+        for (OrderedSpriteSet::iterator it = _sprites.begin();
+             it != _sprites.end(); ++ it) {
             (*it)->draw(_canvas, &_viewport);
         }
 
         _canvas->end();
     }
+}
+
+Surface *
+Game::load_surface_from_image(const char *filename) {
+    if (_image_surfaces.find(filename) == _image_surfaces.end()) {
+        _image_surfaces[filename] = Surface::create_from_image(filename);
+    }
+
+    Surface *result = _image_surfaces[filename];
+    assert(result != NULL);
+    return result;
 }
