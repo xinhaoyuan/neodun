@@ -12,9 +12,9 @@ namespace ND {
     
     class Game {
     private:        
-        bool              _running;
-        Canvas           *_canvas;
-        System           *_system;
+        bool    _running;
+        Canvas *_canvas;
+        System *_system;
         
         void _init(void);
         
@@ -38,13 +38,6 @@ namespace ND {
     public:
         void sprite_insert(Sprite *sprite);
         void sprite_remove(Sprite *sprite);        
-
-        // resource management
-    private:
-        std::map<std::string, Surface *> _image_surfaces;
-
-    public:
-        Surface *load_surface_from_image(const char *filename);
     };
 }
 

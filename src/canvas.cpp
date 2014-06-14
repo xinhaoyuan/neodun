@@ -76,14 +76,21 @@ Canvas::copy_surface(Surface *src, int sx, int sy, int width, int height, int ox
     SDL_RenderCopy(_renderer, src->_sdl_texture, &src_rect, &dst_rect);
 }
 
+map<string, Surface *> Surface::_cache;
+
 Surface *
-Surface::create_from_image(const char *filename) {
+Surface::get_from_image_file(const char *filename) {
+    if (_cache.find(filename) != _cache.end()) {
+        return _cache[filename];
+    }
     Surface *result = new Surface();
     SDL_Surface *surface = IMG_Load(filename);
     assert(surface != NULL);
     result->_sdl_texture = SDL_CreateTextureFromSurface(Canvas::_renderer, surface);
     assert(result->_sdl_texture != NULL);
     SDL_FreeSurface(surface);
+
+    _cache[filename] = result;
 
     return result;
 }

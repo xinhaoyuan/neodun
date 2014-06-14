@@ -1,6 +1,8 @@
 #ifndef __ND_CANVAS_HPP__
 #define __ND_CANVAS_HPP__
 
+#include <map>
+#include <string>
 #include <SDL.h>
 
 namespace ND {
@@ -46,8 +48,12 @@ namespace ND {
 
         Surface(void);
         ~Surface(void);
+
+    private:
+        static std::map<std::string, Surface *> _cache;
         
-        static Surface *create_from_image(const char *filename);
+    public:
+        static Surface *get_from_image_file(const char *filename);
     };
 
     class Viewport {

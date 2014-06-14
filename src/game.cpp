@@ -39,7 +39,7 @@ Game::sprite_remove(Sprite *sprite) {
 void
 Game::_init(void) {
     // create sprite manually
-    Surface *surface = Surface::create_from_image("../gfx/sample_1.png");
+    Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
     Sprite *sprite = new Sprite();
     sprite->source = surface;
     sprite->src_x = sprite->src_y = 0;
@@ -87,15 +87,4 @@ Game::main(void) {
 
         _canvas->end();
     }
-}
-
-Surface *
-Game::load_surface_from_image(const char *filename) {
-    if (_image_surfaces.find(filename) == _image_surfaces.end()) {
-        _image_surfaces[filename] = Surface::create_from_image(filename);
-    }
-
-    Surface *result = _image_surfaces[filename];
-    assert(result != NULL);
-    return result;
 }
