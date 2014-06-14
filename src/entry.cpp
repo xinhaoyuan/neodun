@@ -24,6 +24,7 @@ main(int argc, char **argv) {
     }
 
     Canvas::sdl_window = win;
+    Canvas::global_init();
 
     Canvas *canvas = new Canvas(NULL);
     System *system = new System();
