@@ -12,7 +12,7 @@ const int Terrain::BLOCK_WIDTH   = 32;
 const int Terrain::BLOCK_YHEIGHT = 20;
 const int Terrain::BLOCK_ZHEIGHT = 12;
 
-#define TERRAIN_BLOCK_DATA_FILE "../gfx/terrain_blocks.data"
+#define TERRAIN_BLOCK_DATA_FILE "../data/tb.txt"
 
 Terrain::Terrain(void) {
 }
@@ -111,6 +111,8 @@ map<string, TerrainBlock *> *TerrainBlock::_dir = NULL;
 TerrainBlock *
 TerrainBlock::get_from_name(const char *name) {
     if (_dir == NULL) {
+        _dir = new map<string, TerrainBlock *>();
+        
         ifstream in(TERRAIN_BLOCK_DATA_FILE);
         int n_blocks;
         
@@ -159,7 +161,7 @@ TerrainBlock::init(Sprite *sprite) {
 void
 TerrainBlock::tick(Sprite *sprite) {
     if (++ _tick_counter >= TICKS_PER_FRAME) {
-        ++ _frame_counter;
+        _frame_counter = (_frame_counter + 1) % _frames_src.size();
         _tick_counter = 0;
     }
     

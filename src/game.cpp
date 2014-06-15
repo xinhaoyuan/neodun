@@ -40,15 +40,18 @@ Game::sprite_remove(Sprite *sprite) {
 void
 Game::_init(void) {
     // create sprite manually
-    Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
-    Sprite *sprite = new Sprite();
-    sprite->source = surface;
-    sprite->src_x = sprite->src_y = 0;
-    sprite->width = sprite->height = 32;
-    sprite->offset_x = sprite->offset_y = 10;
-    sprite->center_x = sprite->center_y = 0;
+    // Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
+    // Sprite *sprite = new Sprite();
+    // sprite->source = surface;
+    // sprite->src_x = sprite->src_y = 0;
+    // sprite->width = sprite->height = 32;
+    // sprite->offset_x = sprite->offset_y = 10;
+    // sprite->center_x = sprite->center_y = 0;
 
-    sprite_insert(sprite);
+    // sprite_insert(sprite);
+
+    Terrain *terrain = Terrain::get_from_map_file("../data/map_1.txt");
+    terrain_set(terrain);
 }
 
 void
@@ -86,6 +89,10 @@ Game::main(void) {
             _system->release_event(e);
         }
 
+        // internal event
+        if (_terrain != NULL)
+            _terrain->tick();
+        
         _canvas->begin();
         _canvas->set_color(0, 0, 0, 255);
         _canvas->clear();
