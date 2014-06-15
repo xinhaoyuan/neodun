@@ -3,12 +3,14 @@
 
 #include <map>
 #include <string>
+#include <vector>
+#include <utility>
 
-#include "game.hpp"
 #include "sprite.hpp"
 
 namespace ND {
 
+    class Game;
     class TerrainBlock;
     
     class Terrain {
@@ -39,7 +41,15 @@ namespace ND {
     };
 
     class TerrainBlock {
+    private:
 
+        Surface *_src;
+        std::vector< std::pair< int, int > > _frames_src;
+        int _frame_counter;
+        int _tick_counter;
+
+        static const int TICKS_PER_FRAME;
+        
         TerrainBlock(void);
         ~TerrainBlock(void);
 

@@ -7,6 +7,7 @@
 #include "canvas.hpp"
 #include "system.hpp"
 #include "sprite.hpp"
+#include "terrain.hpp"
 
 namespace ND {
     
@@ -34,10 +35,12 @@ namespace ND {
         
         OrderedSpriteSet  _sprites;
         Viewport          _viewport;
+        Terrain          *_terrain;
 
     public:
         void sprite_insert(Sprite *sprite);
-        void sprite_remove(Sprite *sprite);        
+        void sprite_remove(Sprite *sprite);
+        void terrain_set(Terrain *terrain);
     };
 }
 

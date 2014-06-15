@@ -21,6 +21,7 @@ Game::Game(Canvas *canvas, System *system) {
     _canvas = canvas;
     _system = system;
     _running = true;
+    _terrain = NULL;
 }
 
 Game::~Game(void) {
@@ -48,6 +49,16 @@ Game::_init(void) {
     sprite->center_x = sprite->center_y = 0;
 
     sprite_insert(sprite);
+}
+
+void
+Game::terrain_set(Terrain *terrain) {
+    if (_terrain != NULL) {
+        _terrain->clear();
+    }
+
+    _terrain = terrain;
+    _terrain->setup(this);
 }
 
 void
