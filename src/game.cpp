@@ -45,6 +45,12 @@ Game::sprite_remove(Sprite *sprite) {
 }
 
 void
+Game::sprite_location_update(Sprite *sprite) {
+    _sprites.erase(sprite);
+    _sprites.insert(sprite);
+}
+
+void
 Game::controller_add(Controller *controller) {
     _controllers.insert(controller);
 }
@@ -54,21 +60,87 @@ Game::controller_remove(Controller *controller) {
     _controllers.erase(controller);
 }
 
+class TestController : public Controller {
+    Sprite          *_sprite;
+    CollisionObject *_collision;
+    
+public:
+    TestController(Game *game) {
+        // create sprite manually
+        Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
+        Sprite *sprite = new Sprite();
+        sprite->source = surface;
+        sprite->src_x = sprite->src_y = 0;
+        sprite->width = sprite->height = 32;
+        sprite->offset_x = sprite->offset_y = 100;
+        sprite->center_x = sprite->center_y = 132;
+
+        _sprite = sprite;
+        _collision = CollisionObject::create_box(100, 100, 132, 132);
+
+        game->sprite_add(_sprite);
+    }
+
+    ~TestController(void) {
+        delete _sprite;
+        delete _collision;
+    }
+    
+    virtual int priority(void) {
+        return 0;
+    }
+
+    virtual void tick(Game *game) {
+        int dx = 0, dy = 0;
+        
+        if (game->system()->key_present(GAME_KEY_UP)) {
+            dy = -1;
+        }
+
+        if (game->system()->key_present(GAME_KEY_DOWN)) {
+            dy = 1;
+        }
+
+        if (game->system()->key_present(GAME_KEY_LEFT)) {
+            dx = -1;
+        }
+
+        if (game->system()->key_present(GAME_KEY_RIGHT)) {
+            dx = 1;
+        }
+
+        _collision->sx += dx;
+        _collision->sy += dy;
+        _collision->ex += dx;
+        _collision->ey += dy;
+
+        if (game->terrain()->collision_test(_collision)) {
+            _collision->sx -= dx;
+            _collision->sy -= dy;
+            _collision->ex -= dx;
+            _collision->ey -= dy;
+        } else {
+            _sprite->center_x += dx;
+            _sprite->center_y += dy;
+            _sprite->offset_x += dx;
+            _sprite->offset_y += dy;
+            
+            game->sprite_location_update(_sprite);
+        }
+    }
+};
+
 void
 Game::_init(void) {
-    // create sprite manually
-    Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
-    Sprite *sprite = new Sprite();
-    sprite->source = surface;
-    sprite->src_x = sprite->src_y = 0;
-    sprite->width = sprite->height = 32;
-    sprite->offset_x = sprite->offset_y = 10;
-    sprite->center_x = sprite->center_y = 42;
-
-    sprite_add(sprite);
-
     Terrain *terrain = Terrain::get_from_map_file("../data/map_1.txt");
     terrain_set(terrain);
+
+    controller_add(new TestController(this));
+}
+
+Terrain *
+Game::terrain(void) {
+    return _terrain;
 }
 
 void

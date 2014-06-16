@@ -15,6 +15,10 @@ namespace ND {
 
     enum {
         GAME_KEY_ESC = 0,
+        GAME_KEY_UP,
+        GAME_KEY_DOWN,
+        GAME_KEY_LEFT,
+        GAME_KEY_RIGHT,
         N_GAME_KEY
     };
     
@@ -55,8 +59,10 @@ namespace ND {
     public:
         void sprite_add(Sprite *sprite);
         void sprite_remove(Sprite *sprite);
+        void sprite_location_update(Sprite *sprite);
         void controller_add(Controller *controller);
         void controller_remove(Controller *controller);
+        Terrain *terrain(void);
         void terrain_set(Terrain *terrain);
     };
 }

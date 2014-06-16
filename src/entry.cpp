@@ -33,6 +33,19 @@ main(int argc, char **argv) {
     system->register_key(SDL_SCANCODE_ESCAPE,
                          GAME_KEY_ESC,
                          System::KEY_REGISTER_PRESSED);
+    system->register_key(SDL_SCANCODE_UP,
+                         GAME_KEY_UP,
+                         System::KEY_REGISTER_PRESENT);
+    system->register_key(SDL_SCANCODE_DOWN,
+                         GAME_KEY_DOWN,
+                         System::KEY_REGISTER_PRESENT);
+    system->register_key(SDL_SCANCODE_LEFT,
+                         GAME_KEY_LEFT,
+                         System::KEY_REGISTER_PRESENT);
+    system->register_key(SDL_SCANCODE_RIGHT,
+                         GAME_KEY_RIGHT,
+                         System::KEY_REGISTER_PRESENT);
+
     
     Game *game = new Game(canvas, system);
 
