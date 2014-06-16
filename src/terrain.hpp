@@ -36,9 +36,6 @@ namespace ND {
         Controller _controller;
         
     public:
-        static const int BLOCK_WIDTH;
-        static const int BLOCK_YHEIGHT;
-        static const int BLOCK_ZHEIGHT;
         
         Terrain(void);
         ~Terrain(void);

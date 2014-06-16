@@ -3,6 +3,7 @@
 
 #include "canvas.hpp"
 #include "game.hpp"
+#include "base.hpp"
 
 using namespace std;
 using namespace ND;

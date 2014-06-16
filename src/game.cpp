@@ -9,14 +9,21 @@ using namespace ND;
 
 bool
 Game::SpriteDrawOrder::operator()(Sprite *a, Sprite *b) {
-    if (a->center_y < b->center_y) return true;
-    else return ((uintptr_t)a < (uintptr_t)b);
+    if (a->layer != b->layer)
+        return a->layer < b->layer;
+
+    if (a->center_y != b->center_y)
+        return a->center_y < b->center_y;
+    
+    return ((uintptr_t)a < (uintptr_t)b);
 }
 
 bool
 Game::ControllerOrder::operator()(Controller *a, Controller *b) {
-    if (a->priority() < b->priority()) return true;
-    else return ((uintptr_t)a < (uintptr_t)b);
+    if (a->priority() != b->priority())
+        return a->priority() < b->priority();
+
+    return ((uintptr_t)a < (uintptr_t)b);
 }
 
 Game::Game(Canvas *canvas, System *system) {
@@ -45,12 +52,6 @@ Game::sprite_remove(Sprite *sprite) {
 }
 
 void
-Game::sprite_location_update(Sprite *sprite) {
-    _sprites.erase(sprite);
-    _sprites.insert(sprite);
-}
-
-void
 Game::controller_add(Controller *controller) {
     _controllers.insert(controller);
 }
@@ -73,10 +74,10 @@ public:
         sprite->src_x = sprite->src_y = 0;
         sprite->width = sprite->height = 32;
         sprite->offset_x = sprite->offset_y = 100;
-        sprite->center_x = sprite->center_y = 132;
-
+        sprite->center_x = sprite->center_y = 120;
+        sprite->layer    = LAYER_CHARACTER;
         _sprite = sprite;
-        _collision = CollisionObject::create_box(100, 100, 132, 132);
+        _collision = CollisionObject::create_box(100, 100, 132, 120);
 
         game->sprite_add(_sprite);
     }
@@ -120,12 +121,14 @@ public:
             _collision->ex -= dx;
             _collision->ey -= dy;
         } else {
+            game->sprite_remove(_sprite);
+            
             _sprite->center_x += dx;
             _sprite->center_y += dy;
             _sprite->offset_x += dx;
             _sprite->offset_y += dy;
             
-            game->sprite_location_update(_sprite);
+            game->sprite_add(_sprite);
         }
     }
 };

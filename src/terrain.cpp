@@ -9,12 +9,6 @@
 using namespace std;
 using namespace ND;
 
-const int Terrain::BLOCK_WIDTH   = 32;
-const int Terrain::BLOCK_YHEIGHT = 20;
-const int Terrain::BLOCK_ZHEIGHT = 12;
-
-#define TERRAIN_BLOCK_DATA_FILE "../data/tb.txt"
-
 Terrain::Terrain(void) {
     _controller._ = this;
 }
@@ -57,6 +51,9 @@ Terrain::get_from_map_file(const char *filename) {
                 s->offset_y = y * BLOCK_YHEIGHT;
                 s->center_x = x * BLOCK_WIDTH + BLOCK_WIDTH / 2;
                 s->center_y = y * BLOCK_YHEIGHT + BLOCK_YHEIGHT / 2 + BLOCK_ZHEIGHT;
+                if (map[index]->can_pass())
+                    s->layer = LAYER_CEIL;
+                else s->layer = LAYER_CHARACTER;
                 s->width    = BLOCK_WIDTH;
                 s->height   = BLOCK_YHEIGHT + BLOCK_ZHEIGHT;
             }
