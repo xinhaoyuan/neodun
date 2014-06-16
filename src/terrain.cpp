@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <string>
+#include <math.h>
 
 #include "terrain.hpp"
 #include "game.hpp"
@@ -15,6 +16,7 @@ const int Terrain::BLOCK_ZHEIGHT = 12;
 #define TERRAIN_BLOCK_DATA_FILE "../data/tb.txt"
 
 Terrain::Terrain(void) {
+    _controller._terrain = this;
 }
 
 Terrain::~Terrain(void) {
@@ -40,6 +42,8 @@ Terrain::get_from_map_file(const char *filename) {
         for (int x = 0; x < width; ++ x) {
             int index = y * width + x;
             in >> block_name;
+
+            smap[index] = NULL;
             
             if (block_name == "_")
                 map[index] = NULL;
@@ -48,14 +52,14 @@ Terrain::get_from_map_file(const char *filename) {
             if (map[index] != NULL) {
                 Sprite *s = new Sprite();
                 smap[index] = s;
-                
+
                 s->offset_x = x * BLOCK_WIDTH;
                 s->offset_y = y * BLOCK_YHEIGHT;
                 s->center_x = x * BLOCK_WIDTH + BLOCK_WIDTH / 2;
                 s->center_y = y * BLOCK_YHEIGHT + BLOCK_YHEIGHT / 2 + BLOCK_ZHEIGHT;
                 s->width    = BLOCK_WIDTH;
                 s->height   = BLOCK_YHEIGHT + BLOCK_ZHEIGHT;
-            } else smap[index] = NULL;
+            }
         }
     }
 
@@ -78,10 +82,12 @@ Terrain::setup(Game *game) {
         for (int x = 0; x < _width; ++ x) {
             int index = y * _width + x;
             if (_map[index] != NULL)
-                _game->sprite_insert(_sprite_map[index]);
+                _game->sprite_add(_sprite_map[index]);
             _map[index]->init(_sprite_map[index]);
         }
     }
+
+    _game->sprite_controller_add(&_controller);
 }
 
 void
@@ -92,18 +98,65 @@ Terrain::clear(void) {
             if (_map[index] != NULL)
                 _game->sprite_remove(_sprite_map[index]);
         }
-    }    
+    }
+
+    _game->sprite_controller_remove(&_controller);
+}
+
+int
+Terrain::Controller::priority(void) {
+    return 0;
 }
 
 void
-Terrain::tick(void) {
-    for (int y = 0; y < _height; ++ y) {
-        for (int x = 0; x < _width; ++ x) {
-            int index = y * _width + x;
-            if (_map[index] != NULL)
-                _map[index]->tick(_sprite_map[index]);
+Terrain::Controller::tick(Game *game) {
+    for (int y = 0; y < _terrain->_height; ++ y) {
+        for (int x = 0; x < _terrain->_width; ++ x) {
+            int index = y * _terrain->_width + x;
+            if (_terrain->_map[index] != NULL)
+                _terrain->_map[index]->tick(_terrain->_sprite_map[index]);
         }
     }
+}
+
+bool
+Terrain::collision_test(CollisionObject *object) {
+    int bb_sx = (object->type == CollisionObject::COLLISION_BOX) ?
+        object->sx : floor(object->center_x - object->radius);
+    int bb_sy = (object->type == CollisionObject::COLLISION_BOX) ?
+        object->sy : floor(object->center_y - object->radius);
+    int bb_ex = (object->type == CollisionObject::COLLISION_BOX) ?
+        object->ex : ceil(object->center_x + object->radius);
+    int bb_ey = (object->type == CollisionObject::COLLISION_BOX) ?
+        object->ey : ceil(object->center_y + object->radius);
+    
+    bb_sx = bb_sx / BLOCK_WIDTH;
+    bb_sy = bb_sy / BLOCK_YHEIGHT;
+    bb_ex = (bb_ex + BLOCK_WIDTH - 1) / BLOCK_WIDTH;
+    bb_ey = (bb_ey + BLOCK_YHEIGHT - 1) / BLOCK_YHEIGHT;
+
+    if (bb_sx < 0) bb_sx = 0;
+    if (bb_ex > _width) bb_ex = _width;
+    if (bb_sy < 0) bb_sy = 0;
+    if (bb_ey > _height) bb_ey = _height;
+
+    CollisionObject cur_block;
+    cur_block.type = CollisionObject::COLLISION_BOX;
+    for (int y = bb_sy; y < bb_ey; ++ y) {
+        for (int x = bb_sx; x < bb_ex; ++ x) {
+            int index = y * _width + x;
+            if (_map[index] != NULL && !_map[index]->can_pass()) {
+                cur_block.sx = x * BLOCK_WIDTH;
+                cur_block.sy = y * BLOCK_YHEIGHT;
+                cur_block.ex = x * BLOCK_WIDTH   + BLOCK_WIDTH;
+                cur_block.ey = y * BLOCK_YHEIGHT + BLOCK_YHEIGHT;
+                
+                if (cur_block.test(object)) return true;
+            }
+        }
+    }
+
+    return false;
 }
 
 map<string, TerrainBlock *> *TerrainBlock::_dir = NULL;
@@ -123,6 +176,7 @@ TerrainBlock::get_from_name(const char *name) {
             string surface_filename;
             in >> name;
             TerrainBlock *block = new TerrainBlock();
+            in >> block->_can_pass;
             in >> surface_filename;
             block->_src = Surface::get_from_image_file(surface_filename.c_str());
             int n_frames;
@@ -167,4 +221,9 @@ TerrainBlock::tick(Sprite *sprite) {
     
     sprite->src_x  = _frames_src[_frame_counter].first;
     sprite->src_y  = _frames_src[_frame_counter].second;
+}
+
+bool
+TerrainBlock::can_pass(void) {
+    return _can_pass;
 }

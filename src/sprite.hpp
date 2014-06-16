@@ -16,6 +16,14 @@ namespace ND {
         bool in_viewport(Viewport *viewport);
         void draw(Canvas *canvas, Viewport *viewport);
     };
+
+    class Game;
+
+    class SpriteController {
+    public:
+        virtual int  priority() = 0;
+        virtual void tick(Game *game) = 0;
+    };
     
 }
 

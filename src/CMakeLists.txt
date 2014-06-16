@@ -10,6 +10,6 @@ PKG_CHECK_MODULES(SDL REQUIRED sdl2)
 INCLUDE_DIRECTORIES(${SDL_INCLUDE_DIRS})
 LINK_DIRECTORIES(${SDL_LIBRARY_DIRS})
 
-ADD_EXECUTABLE(game.bin entry.cpp canvas.cpp game.cpp system.cpp sprite.cpp terrain.cpp)
+ADD_EXECUTABLE(game.bin entry.cpp canvas.cpp game.cpp system.cpp sprite.cpp terrain.cpp collision.cpp)
 TARGET_LINK_LIBRARIES(game.bin ${SDL_LIBRARIES})
 TARGET_LINK_LIBRARIES(game.bin SDL2_image)

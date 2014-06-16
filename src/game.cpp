@@ -17,6 +17,12 @@ Game::SpriteDrawOrder::operator()(Sprite *a, Sprite *b) {
     else return ((uintptr_t)a < (uintptr_t)b);
 }
 
+bool
+Game::SpriteControllerOrder::operator()(SpriteController *a, SpriteController *b) {
+    if (a->priority() < b->priority()) return true;
+    else return ((uintptr_t)a < (uintptr_t)b);
+}
+
 Game::Game(Canvas *canvas, System *system) {
     _canvas = canvas;
     _system = system;
@@ -28,7 +34,7 @@ Game::~Game(void) {
 }
 
 void
-Game::sprite_insert(Sprite *sprite) {
+Game::sprite_add(Sprite *sprite) {
     _sprites.insert(sprite);
 }
 
@@ -38,17 +44,27 @@ Game::sprite_remove(Sprite *sprite) {
 }
 
 void
+Game::sprite_controller_add(SpriteController *controller) {
+    _sprite_controllers.insert(controller);
+}
+
+void
+Game::sprite_controller_remove(SpriteController *controller) {
+    _sprite_controllers.erase(controller);
+}
+
+void
 Game::_init(void) {
     // create sprite manually
-    // Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
-    // Sprite *sprite = new Sprite();
-    // sprite->source = surface;
-    // sprite->src_x = sprite->src_y = 0;
-    // sprite->width = sprite->height = 32;
-    // sprite->offset_x = sprite->offset_y = 10;
-    // sprite->center_x = sprite->center_y = 0;
+    Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
+    Sprite *sprite = new Sprite();
+    sprite->source = surface;
+    sprite->src_x = sprite->src_y = 0;
+    sprite->width = sprite->height = 32;
+    sprite->offset_x = sprite->offset_y = 10;
+    sprite->center_x = sprite->center_y = 42;
 
-    // sprite_insert(sprite);
+    sprite_add(sprite);
 
     Terrain *terrain = Terrain::get_from_map_file("../data/map_1.txt");
     terrain_set(terrain);
@@ -90,9 +106,11 @@ Game::main(void) {
         }
 
         // internal event
-        if (_terrain != NULL)
-            _terrain->tick();
-        
+        for (OrderedSpriteControllerSet::iterator it = _sprite_controllers.begin();
+             it != _sprite_controllers.end(); ++ it) {
+            (*it)->tick(this);
+        }
+
         _canvas->begin();
         _canvas->set_color(0, 0, 0, 255);
         _canvas->clear();

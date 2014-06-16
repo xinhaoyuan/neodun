@@ -7,6 +7,7 @@
 #include <utility>
 
 #include "sprite.hpp"
+#include "collision.hpp"
 
 namespace ND {
 
@@ -17,9 +18,21 @@ namespace ND {
         int _width;
         int _height;
 
-        TerrainBlock **_map;
-        Sprite       **_sprite_map;
-        Game          *_game;
+        TerrainBlock    **_map;
+        Sprite          **_sprite_map;
+        Game             *_game;
+
+        class Controller : public SpriteController {
+        private:
+            friend class Terrain;
+            Terrain *_terrain;
+            
+        public:
+            virtual int  priority(void);
+            virtual void tick(Game *game);
+        };
+
+        Controller _controller;
         
     public:
         static const int BLOCK_WIDTH;
@@ -31,7 +44,7 @@ namespace ND {
         
         void setup(Game *game);
         void clear(void);
-        void tick(void);
+        bool collision_test(CollisionObject *object);
 
     private:
         static std::map<std::string, Terrain *> _cache;
@@ -47,6 +60,7 @@ namespace ND {
         std::vector< std::pair< int, int > > _frames_src;
         int _frame_counter;
         int _tick_counter;
+        bool _can_pass;
 
         static const int TICKS_PER_FRAME;
         
@@ -57,6 +71,8 @@ namespace ND {
 
         void init(Sprite *spirte);
         void tick(Sprite *sprite);
+
+        bool can_pass(void);
 
     private:
         static std::map<std::string, TerrainBlock *> *_dir;

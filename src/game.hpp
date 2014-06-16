@@ -16,7 +16,7 @@ namespace ND {
         bool    _running;
         Canvas *_canvas;
         System *_system;
-        
+
         void _init(void);
         
     public:
@@ -32,14 +32,24 @@ namespace ND {
             bool operator()(Sprite *a, Sprite *b);
         };
         typedef std::set<Sprite *, SpriteDrawOrder> OrderedSpriteSet;
-        
+
+        class SpriteControllerOrder {
+        public:
+            bool operator()(SpriteController *a, SpriteController *b);
+        };
+        typedef std::set<SpriteController *, SpriteControllerOrder> OrderedSpriteControllerSet;
+
+        OrderedSpriteControllerSet
+                          _sprite_controllers;
         OrderedSpriteSet  _sprites;
         Viewport          _viewport;
         Terrain          *_terrain;
 
     public:
-        void sprite_insert(Sprite *sprite);
+        void sprite_add(Sprite *sprite);
         void sprite_remove(Sprite *sprite);
+        void sprite_controller_add(SpriteController *controller);
+        void sprite_controller_remove(SpriteController *controller);
         void terrain_set(Terrain *terrain);
     };
 }
