@@ -28,6 +28,12 @@ main(int argc, char **argv) {
 
     Canvas *canvas = new Canvas(NULL);
     System *system = new System();
+
+    system->init_game_key(N_GAME_KEY);
+    system->register_key(SDL_SCANCODE_ESCAPE,
+                         GAME_KEY_ESC,
+                         System::KEY_REGISTER_PRESSED);
+    
     Game *game = new Game(canvas, system);
 
     game->main();

@@ -16,7 +16,7 @@ const int Terrain::BLOCK_ZHEIGHT = 12;
 #define TERRAIN_BLOCK_DATA_FILE "../data/tb.txt"
 
 Terrain::Terrain(void) {
-    _controller._terrain = this;
+    _controller._ = this;
 }
 
 Terrain::~Terrain(void) {
@@ -87,7 +87,7 @@ Terrain::setup(Game *game) {
         }
     }
 
-    _game->sprite_controller_add(&_controller);
+    _game->controller_add(&_controller);
 }
 
 void
@@ -100,7 +100,7 @@ Terrain::clear(void) {
         }
     }
 
-    _game->sprite_controller_remove(&_controller);
+    _game->controller_remove(&_controller);
 }
 
 int
@@ -110,11 +110,11 @@ Terrain::Controller::priority(void) {
 
 void
 Terrain::Controller::tick(Game *game) {
-    for (int y = 0; y < _terrain->_height; ++ y) {
-        for (int x = 0; x < _terrain->_width; ++ x) {
-            int index = y * _terrain->_width + x;
-            if (_terrain->_map[index] != NULL)
-                _terrain->_map[index]->tick(_terrain->_sprite_map[index]);
+    for (int y = 0; y < _->_height; ++ y) {
+        for (int x = 0; x < _->_width; ++ x) {
+            int index = y * _->_width + x;
+            if (_->_map[index] != NULL)
+                _->_map[index]->tick(_->_sprite_map[index]);
         }
     }
 }
@@ -195,12 +195,12 @@ TerrainBlock::get_from_name(const char *name) {
     else return (*_dir)[name];
 }
 
-TerrainBlock::TerrainBlock() {
+TerrainBlock::TerrainBlock(void) {
     _frame_counter = 0;
     _tick_counter = 0;
 }
 
-TerrainBlock::~TerrainBlock() {
+TerrainBlock::~TerrainBlock(void) {
 }
 
 const int TerrainBlock::TICKS_PER_FRAME = 15;

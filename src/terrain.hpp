@@ -8,6 +8,7 @@
 
 #include "sprite.hpp"
 #include "collision.hpp"
+#include "controller.hpp"
 
 namespace ND {
 
@@ -22,10 +23,10 @@ namespace ND {
         Sprite          **_sprite_map;
         Game             *_game;
 
-        class Controller : public SpriteController {
+        class Controller : public ND::Controller {
         private:
             friend class Terrain;
-            Terrain *_terrain;
+            Terrain *_;
             
         public:
             virtual int  priority(void);

@@ -10,6 +10,13 @@
 #include "terrain.hpp"
 
 namespace ND {
+
+    const int GAME_FPS = 30;
+
+    enum {
+        GAME_KEY_ESC = 0,
+        N_GAME_KEY
+    };
     
     class Game {
     private:        
@@ -24,6 +31,7 @@ namespace ND {
         ~Game(void);
 
         void main(void);
+        System *system(void);
 
         // sence management
     private:
@@ -33,23 +41,22 @@ namespace ND {
         };
         typedef std::set<Sprite *, SpriteDrawOrder> OrderedSpriteSet;
 
-        class SpriteControllerOrder {
+        class ControllerOrder {
         public:
-            bool operator()(SpriteController *a, SpriteController *b);
+            bool operator()(Controller *a, Controller *b);
         };
-        typedef std::set<SpriteController *, SpriteControllerOrder> OrderedSpriteControllerSet;
+        typedef std::set<Controller *, ControllerOrder> OrderedControllerSet;
 
-        OrderedSpriteControllerSet
-                          _sprite_controllers;
-        OrderedSpriteSet  _sprites;
-        Viewport          _viewport;
-        Terrain          *_terrain;
+        OrderedControllerSet  _controllers;
+        OrderedSpriteSet      _sprites;
+        Viewport              _viewport;
+        Terrain              *_terrain;
 
     public:
         void sprite_add(Sprite *sprite);
         void sprite_remove(Sprite *sprite);
-        void sprite_controller_add(SpriteController *controller);
-        void sprite_controller_remove(SpriteController *controller);
+        void controller_add(Controller *controller);
+        void controller_remove(Controller *controller);
         void terrain_set(Terrain *terrain);
     };
 }

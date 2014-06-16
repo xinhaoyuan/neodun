@@ -9,8 +9,6 @@
 using namespace std;
 using namespace ND;
 
-#define GAME_FPS 30
-
 bool
 Game::SpriteDrawOrder::operator()(Sprite *a, Sprite *b) {
     if (a->center_y < b->center_y) return true;
@@ -18,7 +16,7 @@ Game::SpriteDrawOrder::operator()(Sprite *a, Sprite *b) {
 }
 
 bool
-Game::SpriteControllerOrder::operator()(SpriteController *a, SpriteController *b) {
+Game::ControllerOrder::operator()(Controller *a, Controller *b) {
     if (a->priority() < b->priority()) return true;
     else return ((uintptr_t)a < (uintptr_t)b);
 }
@@ -33,6 +31,11 @@ Game::Game(Canvas *canvas, System *system) {
 Game::~Game(void) {
 }
 
+System *
+Game::system(void) {
+    return _system;
+}
+
 void
 Game::sprite_add(Sprite *sprite) {
     _sprites.insert(sprite);
@@ -44,13 +47,13 @@ Game::sprite_remove(Sprite *sprite) {
 }
 
 void
-Game::sprite_controller_add(SpriteController *controller) {
-    _sprite_controllers.insert(controller);
+Game::controller_add(Controller *controller) {
+    _controllers.insert(controller);
 }
 
 void
-Game::sprite_controller_remove(SpriteController *controller) {
-    _sprite_controllers.erase(controller);
+Game::controller_remove(Controller *controller) {
+    _controllers.erase(controller);
 }
 
 void
@@ -90,24 +93,17 @@ Game::main(void) {
     _init();
     
     while (_running) {
-        _system->delay_for_fps(GAME_FPS);
+        _system->next_frame(GAME_FPS);
 
         // external event
-        while (_system->has_event()) {
-            InputEvent *e = _system->acquire_event();
-            if (e == NULL) continue;
-            
-            switch (e->get_type()) {
-            case InputEvent::KEY_DOWN:
-                _running = false;
-                break;
-            }
-            _system->release_event(e);
-        }
+        _system->process_events();
 
+        if (_system->key_pressed(GAME_KEY_ESC))
+            _running = false;
+        
         // internal event
-        for (OrderedSpriteControllerSet::iterator it = _sprite_controllers.begin();
-             it != _sprite_controllers.end(); ++ it) {
+        for (OrderedControllerSet::iterator it = _controllers.begin();
+             it != _controllers.end(); ++ it) {
             (*it)->tick(this);
         }
 
