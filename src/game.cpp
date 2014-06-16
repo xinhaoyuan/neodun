@@ -2,8 +2,6 @@
 #include <stdint.h>
 #include <assert.h>
 
-#include <SDL_image.h>
-
 #include "game.hpp"
 
 using namespace std;
