@@ -91,6 +91,22 @@ public:
         return 0;
     }
 
+    bool test_move(Game *game, int dx, int dy) {
+        _collision->sx += dx;
+        _collision->sy += dy;
+        _collision->ex += dx;
+        _collision->ey += dy;
+
+        bool result = game->terrain()->collision_test(_collision);
+        
+        _collision->sx -= dx;
+        _collision->sy -= dy;
+        _collision->ex -= dx;
+        _collision->ey -= dy;
+
+        return !result;
+    }
+
     virtual void tick(Game *game) {
         int dx = 0, dy = 0;
         
@@ -110,22 +126,43 @@ public:
             dx = 1;
         }
 
-        _collision->sx += dx;
-        _collision->sy += dy;
-        _collision->ex += dx;
-        _collision->ey += dy;
+        if (test_move(game, dx, dy)) {
 
-        if (game->terrain()->collision_test(_collision)) {
-            _collision->sx -= dx;
-            _collision->sy -= dy;
-            _collision->ex -= dx;
-            _collision->ey -= dy;
-        } else {
+            _collision->sx += dx;
+            _collision->sy += dy;
+            _collision->ex += dx;
+            _collision->ey += dy;
+
             game->sprite_remove(_sprite);
             
             _sprite->center_x += dx;
             _sprite->center_y += dy;
             _sprite->offset_x += dx;
+            _sprite->offset_y += dy;
+            
+            game->sprite_add(_sprite);
+
+            return;
+            
+        } else if (dx == 0 || dy == 0) return;
+
+        if (test_move(game, dx, 0)) {
+            _collision->sx += dx;
+            _collision->ex += dx;
+
+            game->sprite_remove(_sprite);
+            
+            _sprite->center_x += dx;
+            _sprite->offset_x += dx;
+            
+            game->sprite_add(_sprite);
+        } else if (test_move(game, 0, dy)) {
+            _collision->sy += dy;
+            _collision->ey += dy;
+
+            game->sprite_remove(_sprite);
+            
+            _sprite->center_y += dy;
             _sprite->offset_y += dy;
             
             game->sprite_add(_sprite);
