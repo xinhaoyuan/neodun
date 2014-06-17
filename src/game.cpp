@@ -109,21 +109,22 @@ public:
 
     virtual void tick(Game *game) {
         int dx = 0, dy = 0;
+        int step = 2;
         
         if (game->system()->key_present(GAME_KEY_UP)) {
-            dy = -1;
+            dy = -step;
         }
 
         if (game->system()->key_present(GAME_KEY_DOWN)) {
-            dy = 1;
+            dy = step;
         }
 
         if (game->system()->key_present(GAME_KEY_LEFT)) {
-            dx = -1;
+            dx = -step;
         }
 
         if (game->system()->key_present(GAME_KEY_RIGHT)) {
-            dx = 1;
+            dx = step;
         }
 
         if (test_move(game, dx, dy)) {
@@ -142,31 +143,31 @@ public:
             
             game->sprite_add(_sprite);
 
-            return;
+        } else if (dx && dy)  {
+            if (test_move(game, dx, 0)) {
+                _collision->sx += dx;
+                _collision->ex += dx;
+                
+                game->sprite_remove(_sprite);
             
-        } else if (dx == 0 || dy == 0) return;
+                _sprite->center_x += dx;
+                _sprite->offset_x += dx;
+                
+                game->sprite_add(_sprite);
+            } else if (test_move(game, 0, dy)) {
+                _collision->sy += dy;
+                _collision->ey += dy;
 
-        if (test_move(game, dx, 0)) {
-            _collision->sx += dx;
-            _collision->ex += dx;
-
-            game->sprite_remove(_sprite);
-            
-            _sprite->center_x += dx;
-            _sprite->offset_x += dx;
-            
-            game->sprite_add(_sprite);
-        } else if (test_move(game, 0, dy)) {
-            _collision->sy += dy;
-            _collision->ey += dy;
-
-            game->sprite_remove(_sprite);
-            
-            _sprite->center_y += dy;
-            _sprite->offset_y += dy;
-            
-            game->sprite_add(_sprite);
+                game->sprite_remove(_sprite);
+                
+                _sprite->center_y += dy;
+                _sprite->offset_y += dy;
+                
+                game->sprite_add(_sprite);
+            }
         }
+
+        game->move_viewport_center_to(_sprite->center_x, _sprite->center_y);
     }
 };
 
@@ -191,6 +192,17 @@ Game::terrain_set(Terrain *terrain) {
 
     _terrain = terrain;
     _terrain->setup(this);
+}
+
+void
+Game::move_viewport_center_to(int x, int y) {
+    int width = _canvas->width();
+    int height = _canvas->height();
+
+    _viewport.sx = x - width / 2;
+    _viewport.sy = y - height / 2;
+    _viewport.ex = _viewport.sx + width;
+    _viewport.ey = _viewport.sy + width;
 }
 
 void

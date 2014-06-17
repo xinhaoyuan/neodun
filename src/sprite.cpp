@@ -16,5 +16,5 @@ Sprite::in_viewport(Viewport *viewport) {
 void
 Sprite::draw(Canvas *canvas, Viewport *viewport) {
     if (!in_viewport(viewport)) return;
-    canvas->copy_surface(source, src_x, src_y, width, height, offset_x, offset_y);
+    canvas->copy_surface(source, src_x, src_y, width, height, offset_x - viewport->sx, offset_y - viewport->sy);
 }

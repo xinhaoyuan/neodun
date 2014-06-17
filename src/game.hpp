@@ -53,6 +53,7 @@ namespace ND {
         void controller_remove(Controller *controller);
         Terrain *terrain(void);
         void terrain_set(Terrain *terrain);
+        void move_viewport_center_to(int x, int y);
     };
 }
 
