@@ -15,7 +15,8 @@ Canvas::global_init(void) {
     assert(_renderer == NULL);
     _renderer = SDL_CreateRenderer(
         sdl_window, -1,
-        SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE);
+        SDL_RENDERER_ACCELERATED | SDL_RENDERER_TARGETTEXTURE |
+        SDL_RENDERER_PRESENTVSYNC);
     assert(_renderer != NULL);
 }
 

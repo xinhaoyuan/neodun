@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "game.hpp"
+#include "demo.hpp"
 
 using namespace std;
 using namespace ND;
@@ -61,122 +62,9 @@ Game::controller_remove(Controller *controller) {
     _controllers.erase(controller);
 }
 
-class TestController : public Controller {
-    Sprite          *_sprite;
-    CollisionObject *_collision;
-    
-public:
-    TestController(Game *game) {
-        // create sprite manually
-        Surface *surface = Surface::get_from_image_file("../gfx/sample_1.png");
-        Sprite *sprite = new Sprite();
-        sprite->source = surface;
-        sprite->src_x = sprite->src_y = 0;
-        sprite->width = sprite->height = 32;
-        sprite->offset_x = sprite->offset_y = 100;
-        sprite->center_x = sprite->center_y = 120;
-        sprite->layer    = LAYER_CHARACTER;
-        _sprite = sprite;
-        _collision = CollisionObject::create_box(100, 100, 132, 120);
-
-        game->sprite_add(_sprite);
-    }
-
-    ~TestController(void) {
-        delete _sprite;
-        delete _collision;
-    }
-    
-    virtual int priority(void) {
-        return 0;
-    }
-
-    bool test_move(Game *game, int dx, int dy) {
-        _collision->sx += dx;
-        _collision->sy += dy;
-        _collision->ex += dx;
-        _collision->ey += dy;
-
-        bool result = game->terrain()->collision_test(_collision);
-        
-        _collision->sx -= dx;
-        _collision->sy -= dy;
-        _collision->ex -= dx;
-        _collision->ey -= dy;
-
-        return !result;
-    }
-
-    virtual void tick(Game *game) {
-        int dx = 0, dy = 0;
-        int step = 2;
-        
-        if (game->system()->key_present(GAME_KEY_UP)) {
-            dy = -step;
-        }
-
-        if (game->system()->key_present(GAME_KEY_DOWN)) {
-            dy = step;
-        }
-
-        if (game->system()->key_present(GAME_KEY_LEFT)) {
-            dx = -step;
-        }
-
-        if (game->system()->key_present(GAME_KEY_RIGHT)) {
-            dx = step;
-        }
-
-        if (test_move(game, dx, dy)) {
-
-            _collision->sx += dx;
-            _collision->sy += dy;
-            _collision->ex += dx;
-            _collision->ey += dy;
-
-            game->sprite_remove(_sprite);
-            
-            _sprite->center_x += dx;
-            _sprite->center_y += dy;
-            _sprite->offset_x += dx;
-            _sprite->offset_y += dy;
-            
-            game->sprite_add(_sprite);
-
-        } else if (dx && dy)  {
-            if (test_move(game, dx, 0)) {
-                _collision->sx += dx;
-                _collision->ex += dx;
-                
-                game->sprite_remove(_sprite);
-            
-                _sprite->center_x += dx;
-                _sprite->offset_x += dx;
-                
-                game->sprite_add(_sprite);
-            } else if (test_move(game, 0, dy)) {
-                _collision->sy += dy;
-                _collision->ey += dy;
-
-                game->sprite_remove(_sprite);
-                
-                _sprite->center_y += dy;
-                _sprite->offset_y += dy;
-                
-                game->sprite_add(_sprite);
-            }
-        }
-
-        game->move_viewport_center_to(_sprite->center_x, _sprite->center_y);
-    }
-};
-
 void
 Game::_init(void) {
-    Terrain *terrain = Terrain::get_from_map_file("../data/map_1.txt");
-    terrain_set(terrain);
-
-    controller_add(new TestController(this));
+    init_demo(this);
 }
 
 Terrain *
@@ -195,7 +83,7 @@ Game::terrain_set(Terrain *terrain) {
 }
 
 void
-Game::move_viewport_center_to(int x, int y) {
+Game::viewport_move_center_to(int x, int y) {
     int width = _canvas->width();
     int height = _canvas->height();
 
