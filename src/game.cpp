@@ -108,7 +108,7 @@ Game::main(void) {
         // external event
         _system->process_events();
 
-        if (_system->key_pressed(GAME_KEY_ESC))
+        if (_system->quit_requested() || _system->key_pressed(GAME_KEY_ESC))
             _running = false;
         
         // internal event

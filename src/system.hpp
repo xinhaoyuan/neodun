@@ -11,6 +11,7 @@ namespace ND {
     class System {
     private:
         Uint32 _ticks;
+        bool _quit_flag;
 
     public:
         System(void);
@@ -18,6 +19,7 @@ namespace ND {
 
         void next_frame(int fps);
         void process_events(void);
+        bool quit_requested(void);
 
     private:
 

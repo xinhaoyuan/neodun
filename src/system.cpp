@@ -4,6 +4,7 @@ using namespace ND;
 
 System::System(void) {
     _ticks = SDL_GetTicks();
+    _quit_flag = false;
     _n_game_key = -1;
 }
 
@@ -25,8 +26,14 @@ System::process_events(void) {
             int present = _os_key_hook_present[event.key.keysym.scancode];
             if (present >= 0)
                 _key_present[present] = false;
-        }
+        } else if (event.type == SDL_QUIT)
+            _quit_flag = true;
     }
+}
+
+bool
+System::quit_requested(void) {
+    return _quit_flag;
 }
 
 void
